@@ -1,0 +1,23 @@
+{
+  "name": "sightreadchess",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "A typing-tutor for reading chess notation, fast.",
+  "scripts": {
+    "drills": "node scripts/build-drills.mjs",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-chessboard": "^4.7.2",
+    "chess.js": "^1.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^5.4.11"
+  }
+}
