@@ -1,0 +1,18 @@
+{
+  "id": "/",
+  "name": "Sightread Chess",
+  "short_name": "Sightread",
+  "description": "A typing-tutor for reading chess notation, fast. See a move, play it on the board, get faster every day.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b1622",
+  "theme_color": "#0b1622",
+  "categories": ["games", "education"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

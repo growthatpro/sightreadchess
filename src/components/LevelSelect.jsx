@@ -1,6 +1,7 @@
 import { LEVELS } from '../lib/levels'
 import { levelSummary, weakestSub } from '../lib/stats'
 import { levelCount } from '../lib/sampler'
+import InstallHint from './InstallHint'
 
 const fmtSecs = (ms) => (ms == null ? '—' : (ms / 1000).toFixed(2) + 's')
 const pct = (x) => Math.round(x * 100) + '%'
@@ -24,6 +25,7 @@ export default function LevelSelect({
 }) {
   return (
     <div className="menu">
+      <InstallHint />
       <header className="hero">
         <h1>
           Sight<span>read</span> Chess

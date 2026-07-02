@@ -29,7 +29,63 @@ body {
 .app {
   max-width: 540px;
   margin: 0 auto;
-  padding: 20px 16px 56px;
+  /* Extra padding keeps content clear of the iPhone notch + home indicator when
+     installed and running full-screen (safe-area-inset is 0 in a normal browser). */
+  padding: calc(20px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right))
+    calc(56px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+}
+
+/* ---------- install hint ---------- */
+.install-hint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+  font-size: 13.5px;
+  color: #d3dee7;
+  line-height: 1.5;
+}
+.install-emoji {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.install-body {
+  flex: 1;
+}
+.install-body b {
+  color: var(--text);
+}
+.ios-share {
+  color: var(--accent);
+  font-weight: 700;
+}
+.install-btn {
+  flex-shrink: 0;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 7px 14px;
+  cursor: pointer;
+}
+.install-x {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 15px;
+  cursor: pointer;
+  padding: 2px 4px;
+  line-height: 1;
+}
+.install-x:hover {
+  color: var(--text);
 }
 
 /* ---------- menu ---------- */
