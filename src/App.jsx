@@ -6,6 +6,7 @@ import FilesRanks from './components/FilesRanks'
 import Replay from './components/Replay'
 import NotationGuide from './components/NotationGuide'
 import Dashboard from './components/Dashboard'
+import LichessImport from './components/LichessImport'
 import {
   getCoordMode,
   setCoordMode,
@@ -70,6 +71,7 @@ export default function App() {
         onPick={pick}
         onOpenGuide={() => setView({ name: 'guide' })}
         onOpenDashboard={() => setView({ name: 'dashboard' })}
+        onOpenLichess={() => setView({ name: 'lichess' })}
         onReset={reset}
       />
     )
@@ -77,6 +79,15 @@ export default function App() {
     body = <NotationGuide onExit={exit} />
   } else if (view.name === 'dashboard') {
     body = <Dashboard onExit={exit} />
+  } else if (view.name === 'lichess') {
+    body = (
+      <LichessImport
+        coordMode={coordMode}
+        orientation={orientation}
+        notation={notation}
+        onExit={exit}
+      />
+    )
   } else if (LEVEL_BY_ID[view.levelId].kind === 'filerank') {
     body = <FilesRanks key={nonce} coordMode={coordMode} orientation={orientation} onExit={exit} />
   } else if (LEVEL_BY_ID[view.levelId].kind === 'coords') {

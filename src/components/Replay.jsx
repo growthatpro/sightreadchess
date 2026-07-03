@@ -24,7 +24,16 @@ function resolveOrientation(setting) {
 // forward. A wrong move flashes the correct one and is auto-played anyway (error
 // recovery), so the game stays in sync no matter what. Untimed — go at your pace,
 // exit whenever; whatever you did is scored.
-export default function Replay({ coordMode = 'on', orientation = 'white', notation = 'san', onExit }) {
+export default function Replay({
+  coordMode = 'on',
+  orientation = 'white',
+  notation = 'san',
+  onExit,
+  gameList = games,
+  fixedGame = null,
+  titlePill = 'L8',
+  titleName = 'Whole game',
+}) {
   const boardWidth = useBoardWidth()
   const { showCoords, isPeek, peeking, peekHandlers } = usePeek(coordMode)
 
@@ -60,7 +69,7 @@ export default function Replay({ coordMode = 'on', orientation = 'white', notati
 
   function start() {
     clearTimeout(timeoutRef.current)
-    const game = games[Math.floor(Math.random() * games.length)]
+    const game = fixedGame || gameList[Math.floor(Math.random() * gameList.length)]
     gameRef.current = game
     chessRef.current = new Chess()
     plyRef.current = 0
@@ -192,7 +201,7 @@ export default function Replay({ coordMode = 'on', orientation = 'white', notati
           ← Finish
         </button>
         <div className="round-title">
-          <span className="pill">L8</span> Whole game
+          <span className="pill">{titlePill}</span> {titleName}
         </div>
         <div className="spacer" />
       </div>

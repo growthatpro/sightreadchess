@@ -22,6 +22,7 @@ export default function LevelSelect({
   onPick,
   onOpenGuide,
   onOpenDashboard,
+  onOpenLichess,
   onReset,
 }) {
   return (
@@ -121,6 +122,10 @@ export default function LevelSelect({
           )
         })}
       </div>
+
+      <button className="li-cta" onClick={onOpenLichess}>
+        ⚡ Play your own Lichess games →
+      </button>
 
       <footer className="menu-foot">
         <details>
