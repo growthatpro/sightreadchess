@@ -12,7 +12,7 @@ function blankLevel() {
 
 function defaults() {
   return {
-    settings: { coords: 'on', orientation: 'white', notation: 'san', boardTheme: 'green' },
+    settings: { coords: 'on', orientation: 'white', notation: 'san', boardTheme: 'green', pieceSet: 'neo' },
     levels: {},
   }
 }
@@ -88,6 +88,13 @@ export function getBoardTheme() {
 }
 export function setBoardTheme(v) {
   read().settings.boardTheme = v
+  write()
+}
+export function getPieceSet() {
+  return read().settings.pieceSet || 'neo'
+}
+export function setPieceSet(v) {
+  read().settings.pieceSet = v
   write()
 }
 

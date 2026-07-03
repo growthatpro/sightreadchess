@@ -1,7 +1,7 @@
 import { LEVELS } from '../lib/levels'
 import { levelSummary, weakestSub } from '../lib/stats'
 import { levelCount } from '../lib/sampler'
-import { BOARD_THEMES } from '../lib/board'
+import { BOARD_THEMES, PIECE_SETS } from '../lib/board'
 import InstallHint from './InstallHint'
 
 const fmtSecs = (ms) => (ms == null ? '—' : (ms / 1000).toFixed(2) + 's')
@@ -22,6 +22,8 @@ export default function LevelSelect({
   onChooseNotation,
   boardTheme,
   onChooseBoardTheme,
+  pieceSet,
+  onChoosePieceSet,
   onPick,
   onOpenGuide,
   onOpenDashboard,
@@ -92,11 +94,46 @@ export default function LevelSelect({
             value={boardTheme}
             onChange={onChooseBoardTheme}
             options={Object.entries(BOARD_THEMES).map(([k, v]) => [k, v.label])}
-            swatches={BOARD_THEMES}
+            renderSwatch={(val) => (
+              <span
+                className="seg-swatch"
+                style={{
+                  background: `linear-gradient(135deg, ${BOARD_THEMES[val].light} 0 50%, ${BOARD_THEMES[val].dark} 50% 100%)`,
+                }}
+              />
+            )}
           />
         </div>
 
-        <span className="settings-note full">{COORD_NOTES[coordMode] || COORD_NOTES.on}</span>
+        <div className="seg-group">
+          <span className="seg-label">Pieces</span>
+          <Segmented
+            value={pieceSet}
+            onChange={onChoosePieceSet}
+            options={Object.entries(PIECE_SETS).map(([k, v]) => [k, v.label])}
+            renderSwatch={(val) => (
+              <img className="seg-piece" src={`/pieces/${val}/wN.svg`} alt="" />
+            )}
+          />
+        </div>
+
+        <div className="settings-help full">
+          <p>
+            <b>Coordinates</b> — the letters (a–h) and numbers (1–8) along the board’s edges.{' '}
+            {COORD_NOTES[coordMode] || COORD_NOTES.on}
+          </p>
+          <p>
+            <b>Board side</b> — which side you sit on. Notation never changes when the board flips;
+            from Black’s side it’s just the mirror image.
+          </p>
+          <p>
+            <b>Notation</b> — how a move is written. Letters (Nf3) are the standard; figurines (♞f3)
+            can be easier to start with. Recommended: stick with Letters.
+          </p>
+          <p>
+            <b>Board &amp; Pieces</b> — pure personal preference; pick whatever looks best to you.
+          </p>
+        </div>
       </div>
 
       <div className="grid">
@@ -173,7 +210,7 @@ export default function LevelSelect({
   )
 }
 
-function Segmented({ value, onChange, options, swatches }) {
+function Segmented({ value, onChange, options, renderSwatch }) {
   return (
     <div className="seg">
       {options.map(([val, label]) => (
@@ -182,14 +219,7 @@ function Segmented({ value, onChange, options, swatches }) {
           className={'seg-btn' + (value === val ? ' on' : '')}
           onClick={() => onChange(val)}
         >
-          {swatches && swatches[val] && (
-            <span
-              className="seg-swatch"
-              style={{
-                background: `linear-gradient(135deg, ${swatches[val].light} 0 50%, ${swatches[val].dark} 50% 100%)`,
-              }}
-            />
-          )}
+          {renderSwatch && renderSwatch(val)}
           {label}
         </button>
       ))}

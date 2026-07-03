@@ -32,3 +32,13 @@ export const BOARD_THEMES = {
   slate: { light: '#e6edf2', dark: '#6f97ad', label: 'Slate' },
 }
 export const DEFAULT_BOARD_THEME = 'green'
+
+// Piece sets. Bundled SVGs live in public/pieces/{key}/{code}.svg. 'neo' is the
+// closest free set to Chess.com's look (their actual pieces are proprietary).
+export const PIECE_SETS = {
+  neo: { label: 'Neo' },
+  classic: { label: 'Classic' },
+  modern: { label: 'Modern' },
+}
+export const DEFAULT_PIECE_SET = 'neo'
+export const PIECE_CODES = ['wP', 'wN', 'wB', 'wR', 'wQ', 'wK', 'bP', 'bN', 'bB', 'bR', 'bQ', 'bK']

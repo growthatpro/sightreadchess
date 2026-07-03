@@ -1,7 +1,7 @@
-import { useCallback, useReducer, useRef } from 'react'
+import { useCallback, useMemo, useReducer, useRef } from 'react'
 import { Chessboard } from 'react-chessboard'
-import { occupiedSquares, BOARD_THEMES } from '../lib/board'
-import { getBoardTheme } from '../lib/stats'
+import { occupiedSquares, BOARD_THEMES, PIECE_CODES } from '../lib/board'
+import { getBoardTheme, getPieceSet } from '../lib/stats'
 
 // The board. Two ways to move: drag a piece, or click source then destination.
 // Deliberately NO legal-move highlighting and NO legal-only constraint — that would
@@ -22,11 +22,29 @@ export default function Board({
   onAttempt,
   highlightSquares,
   theme,
+  pieceSet,
   arrows,
 }) {
   const live = useRef({})
   live.current = { fen, interactionEnabled, onAttempt }
   const t = BOARD_THEMES[theme || getBoardTheme()] || BOARD_THEMES.green
+
+  const setKey = pieceSet || getPieceSet()
+  const customPieces = useMemo(() => {
+    const cp = {}
+    for (const code of PIECE_CODES) {
+      const src = `/pieces/${setKey}/${code}.svg`
+      cp[code] = ({ squareWidth }) => (
+        <img
+          src={src}
+          alt=""
+          draggable={false}
+          style={{ width: squareWidth, height: squareWidth, pointerEvents: 'none' }}
+        />
+      )
+    }
+    return cp
+  }, [setKey])
 
   const selectedRef = useRef(null)
   const prevFen = useRef(fen)
@@ -93,6 +111,7 @@ export default function Board({
       customBoardStyle={{ borderRadius: '8px', boxShadow: '0 10px 34px rgba(2, 12, 27, 0.45)' }}
       customDarkSquareStyle={{ backgroundColor: t.dark }}
       customLightSquareStyle={{ backgroundColor: t.light }}
+      customPieces={customPieces}
       customArrows={arrows}
       animationDuration={140}
     />

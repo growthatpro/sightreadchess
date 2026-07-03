@@ -274,6 +274,35 @@ body {
   margin-right: 5px;
   border: 1px solid rgba(255, 255, 255, 0.18);
 }
+.seg-piece {
+  width: 17px;
+  height: 17px;
+  margin-right: 4px;
+  object-fit: contain;
+}
+.seg-btn.on .seg-piece {
+  filter: drop-shadow(0 0 1px rgba(11, 22, 34, 0.5));
+}
+
+.settings-help {
+  flex-basis: 100%;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+  margin-top: 2px;
+}
+.settings-help p {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.settings-help p:last-child {
+  margin-bottom: 0;
+}
+.settings-help b {
+  color: var(--text);
+  font-weight: 600;
+}
 
 .grid {
   display: grid;

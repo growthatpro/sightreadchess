@@ -17,6 +17,8 @@ import {
   setNotation,
   getBoardTheme,
   setBoardTheme,
+  getPieceSet,
+  setPieceSet,
   resetAll,
 } from './lib/stats'
 import { LEVEL_BY_ID } from './lib/levels'
@@ -27,6 +29,7 @@ export default function App() {
   const [orientation, setOrientationState] = useState(getOrientation())
   const [notation, setNotationState] = useState(getNotation())
   const [boardTheme, setBoardThemeState] = useState(getBoardTheme())
+  const [pieceSet, setPieceSetState] = useState(getPieceSet())
   const [nonce, setNonce] = useState(0) // forces a fresh Round mount on "Again"
 
   function chooseCoordMode(v) {
@@ -45,6 +48,10 @@ export default function App() {
     setBoardTheme(v)
     setBoardThemeState(v)
   }
+  function choosePieceSet(v) {
+    setPieceSet(v)
+    setPieceSetState(v)
+  }
 
   function pick(levelId) {
     setNonce((n) => n + 1)
@@ -62,6 +69,7 @@ export default function App() {
       setOrientationState(getOrientation())
       setNotationState(getNotation())
       setBoardThemeState(getBoardTheme())
+      setPieceSetState(getPieceSet())
       setView({ name: 'menu' })
       setNonce((n) => n + 1)
     }
@@ -79,6 +87,8 @@ export default function App() {
         onChooseNotation={chooseNotation}
         boardTheme={boardTheme}
         onChooseBoardTheme={chooseBoardTheme}
+        pieceSet={pieceSet}
+        onChoosePieceSet={choosePieceSet}
         onPick={pick}
         onOpenGuide={() => setView({ name: 'guide' })}
         onOpenDashboard={() => setView({ name: 'dashboard' })}
