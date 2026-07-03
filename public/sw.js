@@ -8,7 +8,7 @@
  *   - hashed assets (JS/CSS/JSON/icons): cache-first → instant, immutable.
  * Bump CACHE to force every client to drop the old cache on the next visit.
  */
-const CACHE = 'sightread-v1'
+const CACHE = 'sightread-v2'
 const CORE = [
   '/',
   '/index.html',

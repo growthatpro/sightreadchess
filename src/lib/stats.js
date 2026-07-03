@@ -17,7 +17,7 @@ function defaults() {
       orientation: 'white',
       notation: 'san',
       boardTheme: 'green',
-      pieceSet: 'neo',
+      pieceSet: 'classic',
       sound: 'on',
       blindfold: 'off',
       onboarded: false,
@@ -40,6 +40,13 @@ function read() {
   if (!cache.settings) cache.settings = { coords: true }
   if (!cache.levels) cache.levels = {}
   if (!cache.rating) cache.rating = { current: null, best: 0, tests: 0, history: [] }
+  // One-time: Classic is now the standard piece set. Flip anyone still on the old
+  // 'neo' default over to it, once — after this, an explicit Neo choice sticks.
+  if (!cache.settings.pieceDefaultV2) {
+    if (cache.settings.pieceSet === 'neo') cache.settings.pieceSet = 'classic'
+    cache.settings.pieceDefaultV2 = true
+    write()
+  }
   return cache
 }
 
@@ -102,7 +109,7 @@ export function setBoardTheme(v) {
   write()
 }
 export function getPieceSet() {
-  return read().settings.pieceSet || 'neo'
+  return read().settings.pieceSet || 'classic'
 }
 export function setPieceSet(v) {
   read().settings.pieceSet = v
