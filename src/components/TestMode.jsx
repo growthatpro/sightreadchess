@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Board from './Board'
 import { useBoardWidth } from '../lib/useBoardWidth'
+import { useBoardSwap } from '../lib/useBoardSwap'
 import { usePeek } from '../lib/usePeek'
 import PeekButton from './PeekButton'
 import { displayMove } from '../lib/notation'
@@ -42,6 +43,7 @@ function itemLimitMs(baseDiff) {
 
 export default function TestMode({ coordMode = 'on', orientation = 'white', notation = 'san', onExit }) {
   const boardWidth = useBoardWidth()
+  const { anim, style: boardStyle, swapIn, playMove } = useBoardSwap()
   const { showCoords, isPeek, peeking, peekHandlers } = usePeek(coordMode)
 
   const ratingRef = useRef(DEFAULT_SEED)
@@ -108,6 +110,7 @@ export default function TestMode({ coordMode = 'on', orientation = 'white', nota
     setHighlights({})
     setInteraction(true)
     setLimitPct(100)
+    swapIn() // snap + fade the fresh position, no piece teleport
   }
 
   function onTick() {
@@ -130,6 +133,7 @@ export default function TestMode({ coordMode = 'on', orientation = 'white', nota
     if (phase.current !== 'playing') return
     phase.current = 'feedback'
     setInteraction(false)
+    playMove() // let the played move slide
     const { drill: d, baseDiff } = curRef.current
 
     const effDiff = effectiveDifficulty(correct, baseDiff, ms)
@@ -234,7 +238,7 @@ export default function TestMode({ coordMode = 'on', orientation = 'white', nota
         <div className="san">{drill ? displayMove(drill, notation) : ''}</div>
       </div>
 
-      <div className="board-wrap">
+      <div className="board-wrap" style={boardStyle}>
         <Board
           fen={fen}
           orientation={boardSide}
@@ -243,6 +247,7 @@ export default function TestMode({ coordMode = 'on', orientation = 'white', nota
           interactionEnabled={interaction}
           onAttempt={handleAttempt}
           highlightSquares={highlights}
+          animationMs={anim}
         />
       </div>
 

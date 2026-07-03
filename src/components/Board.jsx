@@ -25,6 +25,7 @@ export default function Board({
   pieceSet,
   arrows,
   hidePieces = false, // blindfold mode — pieces invisible, squares still clickable
+  animationMs = 140, // 140 to slide a played move; 0 to snap a fresh position (no teleport)
 }) {
   const live = useRef({})
   live.current = { fen, interactionEnabled, onAttempt }
@@ -119,7 +120,7 @@ export default function Board({
       customLightSquareStyle={{ backgroundColor: t.light }}
       customPieces={customPieces}
       customArrows={arrows}
-      animationDuration={140}
+      animationDuration={animationMs}
     />
   )
 }

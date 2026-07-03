@@ -5,6 +5,7 @@ import { nextDrill } from '../lib/sampler'
 import { recordAttempt, recordRound, median } from '../lib/stats'
 import { LEVEL_BY_ID } from '../lib/levels'
 import { useBoardWidth } from '../lib/useBoardWidth'
+import { useBoardSwap } from '../lib/useBoardSwap'
 import { displayMove } from '../lib/notation'
 import { usePeek } from '../lib/usePeek'
 import { playCorrect, playWrong, playFinish } from '../lib/sound'
@@ -31,6 +32,7 @@ const AMBER = 'rgba(245, 158, 11, 0.60)'
 export default function Round({ levelId, coordMode = 'on', orientation = 'white', notation = 'san', onExit }) {
   const level = LEVEL_BY_ID[levelId]
   const boardWidth = useBoardWidth()
+  const { anim, style: boardStyle, swapIn, playMove } = useBoardSwap()
   const { showCoords, isPeek, peeking, peekHandlers } = usePeek(coordMode)
 
   // Mutable round accumulators — read by the timer + the feedback timeout, so they
@@ -106,6 +108,7 @@ export default function Round({ levelId, coordMode = 'on', orientation = 'white'
     setBoardFen(d.fen)
     setHighlights({})
     setInteraction(true)
+    swapIn() // snap the fresh position in + fade — no chaotic piece teleport
   }
 
   function handleAttempt(from, to) {
@@ -119,6 +122,7 @@ export default function Round({ levelId, coordMode = 'on', orientation = 'white'
     a.attempts += 1
     phase.current = 'feedback'
     setInteraction(false)
+    playMove() // let the played move slide (not snap)
 
     if (isCorrect) {
       a.correct += 1
@@ -229,7 +233,7 @@ export default function Round({ levelId, coordMode = 'on', orientation = 'white'
         <div className="san">{drill ? displayMove(drill, notation) : ''}</div>
       </div>
 
-      <div className="board-wrap">
+      <div className="board-wrap" style={boardStyle}>
         <Board
           fen={boardFen}
           orientation={boardSide}
@@ -238,6 +242,7 @@ export default function Round({ levelId, coordMode = 'on', orientation = 'white'
           interactionEnabled={interaction}
           onAttempt={handleAttempt}
           highlightSquares={highlights}
+          animationMs={anim}
         />
       </div>
 

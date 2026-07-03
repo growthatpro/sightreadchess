@@ -3,6 +3,7 @@ import Board from './Board'
 import { nextWritingDrill } from '../lib/sampler'
 import { recordAttempt, recordRound, median, levelSummary } from '../lib/stats'
 import { useBoardWidth } from '../lib/useBoardWidth'
+import { useBoardSwap } from '../lib/useBoardSwap'
 import { usePeek } from '../lib/usePeek'
 import { gradeWritten, isRight } from '../lib/grade'
 import { playCorrect, playWrong, playFinish } from '../lib/sound'
@@ -23,6 +24,7 @@ function resolveOrientation(setting) {
 
 export default function WritingPractice({ coordMode = 'on', orientation = 'white', onExit }) {
   const boardWidth = useBoardWidth()
+  const { anim, style: boardStyle, swapIn } = useBoardSwap()
   const { showCoords, isPeek, peeking, peekHandlers } = usePeek(coordMode)
 
   const acc = useRef(null)
@@ -81,6 +83,7 @@ export default function WritingPractice({ coordMode = 'on', orientation = 'white
     drillRef.current = d
     startMsRef.current = performance.now()
     setDrill(d)
+    swapIn() // snap + fade the fresh position, no piece teleport
     setValue('')
     setFeedback(null)
     setPhase('writing')
@@ -183,7 +186,7 @@ export default function WritingPractice({ coordMode = 'on', orientation = 'white
         </span>
       </div>
 
-      <div className="board-wrap">
+      <div className="board-wrap" style={boardStyle}>
         <Board
           fen={d ? d.fen : 'start'}
           orientation={boardSide}
@@ -193,6 +196,7 @@ export default function WritingPractice({ coordMode = 'on', orientation = 'white
           onAttempt={() => {}}
           highlightSquares={highlights}
           arrows={arrows}
+          animationMs={anim}
         />
       </div>
 
