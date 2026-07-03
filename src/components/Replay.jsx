@@ -7,7 +7,8 @@ import games from '../data/games.json'
 import { recordAttempt, recordRound, median } from '../lib/stats'
 import { useBoardWidth } from '../lib/useBoardWidth'
 import { usePeek } from '../lib/usePeek'
-import { displaySan } from '../lib/notation'
+import { displayMove } from '../lib/notation'
+import { playCorrect, playWrong, playFinish } from '../lib/sound'
 
 const CORRECT_FLASH_MS = 240
 const WRONG_FLASH_MS = 1150
@@ -32,6 +33,7 @@ export default function Replay({
   gameList = games,
   fixedGame = null,
   annotations = null, // per-ply commentary (annotated reading mode); null = plain replay
+  blindfold = 'off', // 'on' hides the pieces — track the game from notation alone
   titlePill = 'L8',
   titleName = 'Whole game',
   statKey = 'L8', // which stats bucket this records into
@@ -107,10 +109,10 @@ export default function Replay({
     }
     const after = chess.fen()
     chess.undo() // ...and rewind, so the board still shows the position to solve
-    curRef.current = { san: mv.san, from: mv.from, to: mv.to, after, color: mv.color }
+    curRef.current = { san: mv.san, from: mv.from, to: mv.to, after, color: mv.color, piece: mv.piece }
     acc.current.promptStartMs = performance.now()
     phase.current = 'playing'
-    setPrompt({ san: mv.san, color: mv.color })
+    setPrompt({ san: mv.san, color: mv.color, from: mv.from, to: mv.to, piece: mv.piece })
     setBoardFen(before)
     setHighlights({})
     setInteraction(true)
@@ -144,12 +146,14 @@ export default function Replay({
       if (a.streak > a.bestStreak) a.bestStreak = a.streak
       setBoardFen(cur.after)
       setHighlights({ [cur.from]: { background: GREEN }, [cur.to]: { background: GREEN } })
+      playCorrect()
       syncHud()
       timeoutRef.current = setTimeout(advance, CORRECT_FLASH_MS)
     } else {
       a.streak = 0
       setBoardFen(cur.after) // show the correct move actually played
       setHighlights({ [cur.from]: { background: AMBER }, [cur.to]: { background: AMBER } })
+      playWrong()
       syncHud()
       timeoutRef.current = setTimeout(advance, WRONG_FLASH_MS)
     }
@@ -188,6 +192,7 @@ export default function Replay({
       bestStreak: a.bestStreak,
     }
     recordRound(statKey, s)
+    playFinish()
     setSummary(s)
   }
 
@@ -199,7 +204,7 @@ export default function Replay({
   const pct = total ? Math.max(0, Math.min(100, (ply / total) * 100)) : 0
   const note = annotations ? annotations[ply] : null
   const moveLabel = prompt
-    ? `${Math.floor(ply / 2) + 1}${color === 'w' ? '.' : '…'} ${displaySan(prompt.san, notation)}`
+    ? `${Math.floor(ply / 2) + 1}${color === 'w' ? '.' : '…'} ${displayMove(prompt, notation)}`
     : ''
 
   return (
@@ -251,7 +256,7 @@ export default function Replay({
         <span className={'to-move ' + (color === 'w' ? 'white' : 'black')}>
           {color === 'w' ? '○' : '●'} {color === 'w' ? 'White' : 'Black'} to move
         </span>
-        <div className="san">{prompt ? displaySan(prompt.san, notation) : ''}</div>
+        <div className="san">{prompt ? displayMove(prompt, notation) : ''}</div>
       </div>
 
       <div className="board-wrap">
@@ -263,6 +268,7 @@ export default function Replay({
           interactionEnabled={interaction}
           onAttempt={handleAttempt}
           highlightSquares={highlights}
+          hidePieces={blindfold === 'on'}
         />
       </div>
 
@@ -273,7 +279,7 @@ export default function Replay({
             <p className="annotation-text">{note}</p>
           ) : (
             <p className="annotation-text muted">
-              Play <b>{prompt ? displaySan(prompt.san, notation) : ''}</b> on the board to read on…
+              Play <b>{prompt ? displayMove(prompt, notation) : ''}</b> on the board to read on…
             </p>
           )}
         </div>

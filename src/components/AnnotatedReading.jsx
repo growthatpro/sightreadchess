@@ -23,6 +23,7 @@ export default function AnnotatedReading({
   coordMode = 'on',
   orientation = 'white',
   notation = 'san',
+  blindfold = 'off',
   onExit,
 }) {
   const [pickId, setPickId] = useState(null)
@@ -34,6 +35,7 @@ export default function AnnotatedReading({
         coordMode={coordMode}
         orientation={orientation}
         notation={notation}
+        blindfold={blindfold}
         fixedGame={game}
         annotations={game.comments}
         titlePill="📖"

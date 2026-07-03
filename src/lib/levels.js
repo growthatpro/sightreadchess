@@ -76,6 +76,14 @@ export const LEVELS = [
     subLabels: { disambiguation: 'disambiguation' },
   },
   {
+    id: 'MIX',
+    kind: 'mixed',
+    name: 'Mixed drills',
+    blurb: 'Every move type, shuffled together — rapid fire',
+    examples: ['e4', 'Nxe5', 'O-O', 'Nbd7'],
+    subs: [],
+  },
+  {
     id: 'L8',
     kind: 'replay',
     name: 'Whole game',

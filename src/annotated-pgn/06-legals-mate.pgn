@@ -1,0 +1,12 @@
+[Event "Paris — Légal's Mate"]
+[Site "Paris"]
+[Date "1750.??.??"]
+[White "Sire de Légal"]
+[Black "Saint Brie"]
+[Result "1-0"]
+[Blurb "The oldest famous game on record, and the origin of a mating pattern every club player learns. Légal ignores a pin on his queen, sacrifices her, and mates with three minor pieces."]
+
+1. e4 e5 2. Nf3 d6 3. Bc4 Bg4 {Black pins the knight to the queen — but the pin is an illusion of safety.}
+4. Nc3 g6 {A careless move; Black never sees the storm coming.}
+5. Nxe5 {The famous shot — Légal moves the pinned knight and offers his queen.} Bxd1 {Black takes the queen, and it's already too late.}
+6. Bxf7+ Ke7 7. Nd5# {Checkmate by knight, bishop and knight — the "Légal's Mate" pattern, worth memorising for your own games.}

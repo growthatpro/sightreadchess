@@ -5,6 +5,7 @@ import PeekButton from './PeekButton'
 import { recordAttempt, recordRound, median } from '../lib/stats'
 import { useBoardWidth } from '../lib/useBoardWidth'
 import { usePeek } from '../lib/usePeek'
+import { playCorrect, playWrong, playFinish } from '../lib/sound'
 import { EMPTY_FEN } from '../lib/board'
 
 const ROUND_MOVES = 30
@@ -133,6 +134,7 @@ export default function FilesRanks({ coordMode = 'on', orientation = 'white', on
       a.streak += 1
       if (a.streak > a.bestStreak) a.bestStreak = a.streak
       setHighlights({ [sqName]: { background: GREEN } })
+      playCorrect()
       syncHud()
       timeoutRef.current = setTimeout(advance, CORRECT_FLASH_MS)
     } else {
@@ -142,6 +144,7 @@ export default function FilesRanks({ coordMode = 'on', orientation = 'white', on
       for (const s of squaresOf(t)) hl[s] = { background: AMBER }
       hl[sqName] = { background: 'rgba(239,68,68,0.45)' }
       setHighlights(hl)
+      playWrong()
       syncHud()
       timeoutRef.current = setTimeout(advance, WRONG_FLASH_MS)
     }
@@ -173,6 +176,7 @@ export default function FilesRanks({ coordMode = 'on', orientation = 'white', on
       bestStreak: a.bestStreak,
     }
     recordRound('L0', s)
+    playFinish()
     setSummary(s)
   }
 

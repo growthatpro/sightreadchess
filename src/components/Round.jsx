@@ -5,8 +5,9 @@ import { nextDrill } from '../lib/sampler'
 import { recordAttempt, recordRound, median } from '../lib/stats'
 import { LEVEL_BY_ID } from '../lib/levels'
 import { useBoardWidth } from '../lib/useBoardWidth'
-import { displaySan } from '../lib/notation'
+import { displayMove } from '../lib/notation'
 import { usePeek } from '../lib/usePeek'
+import { playCorrect, playWrong, playFinish } from '../lib/sound'
 import PeekButton from './PeekButton'
 
 // Resolve the orientation setting to a concrete side, held constant for the whole
@@ -126,12 +127,14 @@ export default function Round({ levelId, coordMode = 'on', orientation = 'white'
       if (a.streak > a.bestStreak) a.bestStreak = a.streak
       setBoardFen(d.after)
       setHighlights({ [d.from]: sq(GREEN), [d.to]: sq(GREEN) })
+      playCorrect()
       syncHud()
       timeoutRef.current = setTimeout(advance, CORRECT_FLASH_MS)
     } else {
       a.streak = 0
       setBoardFen(d.after) // show the correct move actually played
       setHighlights({ [d.from]: sq(AMBER), [d.to]: sq(AMBER) })
+      playWrong()
       syncHud()
       timeoutRef.current = setTimeout(advance, WRONG_FLASH_MS)
     }
@@ -166,6 +169,7 @@ export default function Round({ levelId, coordMode = 'on', orientation = 'white'
       bestStreak: a.bestStreak,
     }
     recordRound(levelId, s)
+    playFinish()
     setSummary(s)
   }
 
@@ -222,7 +226,7 @@ export default function Round({ levelId, coordMode = 'on', orientation = 'white'
         <span className={'to-move ' + (lastMove === 'w' ? 'white' : 'black')}>
           {lastMove === 'w' ? '○' : '●'} {lastMove === 'w' ? 'White' : 'Black'} to move
         </span>
-        <div className="san">{drill ? displaySan(drill.san, notation) : ''}</div>
+        <div className="san">{drill ? displayMove(drill, notation) : ''}</div>
       </div>
 
       <div className="board-wrap">

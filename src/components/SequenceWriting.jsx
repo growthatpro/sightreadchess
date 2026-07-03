@@ -5,6 +5,7 @@ import games from '../data/games.json'
 import { recordRound, levelSummary } from '../lib/stats'
 import { useBoardWidth } from '../lib/useBoardWidth'
 import { gradeWritten, isRight, parseMoveSequence } from '../lib/grade'
+import { playFinish } from '../lib/sound'
 import { displaySan } from '../lib/notation'
 
 // Sequence-writing practice — the hard variant of writing mode. You step through the
@@ -118,6 +119,7 @@ export default function SequenceWriting({ coordMode = 'on', orientation = 'white
     setResult({ rows, extra, correct, total: rows.length, bestStreak: best })
     setStep(plies.length) // show the final position
     setPhase('result')
+    playFinish()
   }
 
   function onRecallKey(e) {

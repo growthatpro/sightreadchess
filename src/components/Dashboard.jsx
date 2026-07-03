@@ -4,14 +4,16 @@ import {
   moveTypeStats,
   dailyActivity,
   levelSummary,
+  getRating,
   dayKey,
 } from '../lib/stats'
+import { bandFor } from '../lib/rating'
 
 const fmtSecs = (ms) => (ms == null ? '—' : (ms / 1000).toFixed(2) + 's')
 const pct = (x) => Math.round(x * 100) + '%'
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-export default function Dashboard({ onExit }) {
+export default function Dashboard({ onExit, onOpenTest }) {
   const stats = overallStats()
   const moveTypes = moveTypeStats()
 
@@ -25,9 +27,11 @@ export default function Dashboard({ onExit }) {
         <div className="spacer" />
       </div>
 
+      <RatingCard onOpenTest={onOpenTest} />
+
       {stats.rounds === 0 ? (
         <p className="sc-trend-empty">
-          No rounds yet. Play a level and your streak, trends, and weak spots show up here.
+          No practice rounds yet. Play a level and your streak, trends, and weak spots show up here.
         </p>
       ) : (
         <>
@@ -46,6 +50,63 @@ export default function Dashboard({ onExit }) {
         </>
       )}
     </div>
+  )
+}
+
+// ---- Sightreading rating card ----
+function RatingCard({ onOpenTest }) {
+  const r = getRating()
+  return (
+    <div className="dash-card rating-card">
+      <div className="dash-card-head">
+        <span>🏁 Sightreading rating</span>
+        {r.current != null && <span className="rc-best">best {r.best}</span>}
+      </div>
+      {r.current == null ? (
+        <div className="rc-empty">
+          <p>One number for how fast you read notation. Take the ~2-minute adaptive test to get yours.</p>
+          <button className="btn primary" onClick={onOpenTest}>
+            Take the Sightreading test →
+          </button>
+        </div>
+      ) : (
+        <div className="rc-body">
+          <div className="rc-now">
+            <span className="rc-num">{r.current}</span>
+            <span className="rc-band">{bandFor(r.current)}</span>
+          </div>
+          <div className="rc-side">
+            <RatingSpark history={r.history} />
+            <button className="btn rc-retake" onClick={onOpenTest}>
+              Retake →
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function RatingSpark({ history }) {
+  const pts = history.slice(-14)
+  if (pts.length < 2) {
+    return <span className="rc-spark-empty">Take it again to track your rating over time.</span>
+  }
+  const w = 200
+  const h = 34
+  const pad = 4
+  const vals = pts.map((p) => p.rating)
+  const min = Math.min(...vals)
+  const max = Math.max(...vals)
+  const span = max - min || 1
+  const x = (i) => pad + (i * (w - 2 * pad)) / (pts.length - 1)
+  const y = (v) => h - pad - ((v - min) / span) * (h - 2 * pad)
+  const line = pts.map((p, i) => `${x(i)},${y(p.rating)}`).join(' ')
+  const up = pts[pts.length - 1].rating >= pts[0].rating
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} className={'rc-spark ' + (up ? 'good' : 'warn')} preserveAspectRatio="none">
+      <polyline points={line} fill="none" stroke="currentColor" strokeWidth="2" />
+    </svg>
   )
 }
 

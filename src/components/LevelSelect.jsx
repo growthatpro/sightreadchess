@@ -1,5 +1,6 @@
 import { LEVELS } from '../lib/levels'
-import { levelSummary, weakestSub } from '../lib/stats'
+import { levelSummary, weakestSub, getRating, dailyStreak, practicedToday } from '../lib/stats'
+import { bandFor } from '../lib/rating'
 import { levelCount } from '../lib/sampler'
 import { BOARD_THEMES, PIECE_SETS } from '../lib/board'
 import InstallHint from './InstallHint'
@@ -24,6 +25,10 @@ export default function LevelSelect({
   onChooseBoardTheme,
   pieceSet,
   onChoosePieceSet,
+  sound,
+  onChooseSound,
+  blindfold,
+  onChooseBlindfold,
   onPick,
   onOpenGuide,
   onOpenDashboard,
@@ -31,8 +36,10 @@ export default function LevelSelect({
   onOpenWriting,
   onOpenAnnotated,
   onOpenSequence,
+  onOpenTest,
   onReset,
 }) {
+  const rating = getRating()
   return (
     <div className="menu">
       <InstallHint />
@@ -41,6 +48,21 @@ export default function LevelSelect({
           Sight<span>read</span> Chess
         </h1>
         <p className="tag">Read chess notation at a glance. See the move, play it, get faster.</p>
+
+        <button className="test-cta" onClick={onOpenTest}>
+          {rating.current != null ? (
+            <>
+              <span className="tc-rating">
+                <span className="tc-num">{rating.current}</span>
+                <span className="tc-band">{bandFor(rating.current)}</span>
+              </span>
+              <span className="tc-label">Your Sightreading rating — retake the test →</span>
+            </>
+          ) : (
+            <span className="tc-label solo">🏁 Take the Sightreading test — get your rating →</span>
+          )}
+        </button>
+
         <div className="hero-btns">
           <button className="guide-link" onClick={onOpenGuide}>
             📖 Notation guide
@@ -50,6 +72,8 @@ export default function LevelSelect({
           </button>
         </div>
       </header>
+
+      <DailyGoal />
 
       <div className="settings-row">
         <div className="seg-group">
@@ -86,6 +110,7 @@ export default function LevelSelect({
             options={[
               ['san', 'Letters'],
               ['figurine', '♞ Figurine'],
+              ['long', 'Long'],
             ]}
           />
         </div>
@@ -119,6 +144,30 @@ export default function LevelSelect({
           />
         </div>
 
+        <div className="seg-group">
+          <span className="seg-label">Sound</span>
+          <Segmented
+            value={sound}
+            onChange={onChooseSound}
+            options={[
+              ['on', '🔊 On'],
+              ['off', 'Off'],
+            ]}
+          />
+        </div>
+
+        <div className="seg-group">
+          <span className="seg-label">Blindfold</span>
+          <Segmented
+            value={blindfold}
+            onChange={onChooseBlindfold}
+            options={[
+              ['off', 'Off'],
+              ['on', '🙈 On'],
+            ]}
+          />
+        </div>
+
         <div className="settings-help full">
           <p>
             <b>Coordinates</b> — the letters (a–h) and numbers (1–8) along the board’s edges.{' '}
@@ -130,10 +179,16 @@ export default function LevelSelect({
           </p>
           <p>
             <b>Notation</b> — how a move is written. Letters (Nf3) are the standard; figurines (♞f3)
-            can be easier to start with. Recommended: stick with Letters.
+            swap the piece for its symbol; Long spells out the start square (Ng1-f3). Recommended:
+            stick with Letters.
           </p>
           <p>
             <b>Board &amp; Pieces</b> — pure personal preference; pick whatever looks best to you.
+          </p>
+          <p>
+            <b>Sound</b> — little tones on right/wrong and a phone buzz on a miss. <b>Blindfold</b> —
+            hides the pieces in whole-game replay and annotated reading, so you track the position
+            from the notation alone. Serious training; leave it off until you want a real challenge.
           </p>
         </div>
       </div>
@@ -218,6 +273,20 @@ export default function LevelSelect({
       </footer>
     </div>
   )
+}
+
+function DailyGoal() {
+  const streak = dailyStreak()
+  const done = practicedToday()
+  let text
+  if (done) {
+    text = streak > 1 ? `✓ Practiced today — 🔥 ${streak}-day streak going` : '✓ Practiced today — nice'
+  } else if (streak > 0) {
+    text = `Practice today to keep your 🔥 ${streak}-day streak alive`
+  } else {
+    text = 'Do one round today to start a streak 🔥'
+  }
+  return <div className={'daily-goal' + (done ? ' done' : '')}>{text}</div>
 }
 
 function Segmented({ value, onChange, options, renderSwatch }) {

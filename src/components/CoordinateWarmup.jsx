@@ -5,6 +5,7 @@ import PeekButton from './PeekButton'
 import { recordAttempt, recordRound, median } from '../lib/stats'
 import { useBoardWidth } from '../lib/useBoardWidth'
 import { usePeek } from '../lib/usePeek'
+import { playCorrect, playWrong, playFinish } from '../lib/sound'
 import { EMPTY_FEN } from '../lib/board'
 
 const ROUND_MOVES = 30
@@ -118,12 +119,14 @@ export default function CoordinateWarmup({ coordMode = 'on', orientation = 'whit
       a.streak += 1
       if (a.streak > a.bestStreak) a.bestStreak = a.streak
       setHighlights({ [t]: { background: GREEN } })
+      playCorrect()
       syncHud()
       timeoutRef.current = setTimeout(advance, CORRECT_FLASH_MS)
     } else {
       a.streak = 0
       // flash the square they should have clicked
       setHighlights({ [t]: { background: AMBER }, [sqName]: { background: 'rgba(239,68,68,0.4)' } })
+      playWrong()
       syncHud()
       timeoutRef.current = setTimeout(advance, WRONG_FLASH_MS)
     }
@@ -155,6 +158,7 @@ export default function CoordinateWarmup({ coordMode = 'on', orientation = 'whit
       bestStreak: a.bestStreak,
     }
     recordRound('L1', s)
+    playFinish()
     setSummary(s)
   }
 

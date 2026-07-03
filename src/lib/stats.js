@@ -12,8 +12,18 @@ function blankLevel() {
 
 function defaults() {
   return {
-    settings: { coords: 'on', orientation: 'white', notation: 'san', boardTheme: 'green', pieceSet: 'neo' },
+    settings: {
+      coords: 'on',
+      orientation: 'white',
+      notation: 'san',
+      boardTheme: 'green',
+      pieceSet: 'neo',
+      sound: 'on',
+      blindfold: 'off',
+      onboarded: false,
+    },
     levels: {},
+    rating: { current: null, best: 0, tests: 0, history: [] }, // Sightreading Elo
   }
 }
 
@@ -29,6 +39,7 @@ function read() {
   }
   if (!cache.settings) cache.settings = { coords: true }
   if (!cache.levels) cache.levels = {}
+  if (!cache.rating) cache.rating = { current: null, best: 0, tests: 0, history: [] }
   return cache
 }
 
@@ -95,6 +106,49 @@ export function getPieceSet() {
 }
 export function setPieceSet(v) {
   read().settings.pieceSet = v
+  write()
+}
+export function getSound() {
+  return read().settings.sound === 'off' ? 'off' : 'on'
+}
+export function setSound(v) {
+  read().settings.sound = v === 'off' ? 'off' : 'on'
+  write()
+}
+export function getBlindfold() {
+  return read().settings.blindfold === 'on' ? 'on' : 'off'
+}
+export function setBlindfold(v) {
+  read().settings.blindfold = v === 'on' ? 'on' : 'off'
+  write()
+}
+export function getOnboarded() {
+  return !!read().settings.onboarded
+}
+export function setOnboarded(v) {
+  read().settings.onboarded = !!v
+  write()
+}
+
+// ---- Sightreading Elo ----
+export function getRating() {
+  const r = read().rating || {}
+  return {
+    current: r.current ?? null,
+    best: r.best || 0,
+    tests: r.tests || 0,
+    history: r.history || [],
+  }
+}
+export function recordTest(finalRating) {
+  const s = read()
+  if (!s.rating) s.rating = { current: null, best: 0, tests: 0, history: [] }
+  const r = s.rating
+  r.current = finalRating
+  r.best = Math.max(r.best || 0, finalRating)
+  r.tests = (r.tests || 0) + 1
+  r.history.push({ ts: Date.now(), rating: finalRating })
+  if (r.history.length > 60) r.history = r.history.slice(-60)
   write()
 }
 
@@ -217,6 +271,14 @@ export function dailyActivity() {
     map.set(k, cur)
   }
   return map
+}
+
+// Did any practice happen today? Counts a played round OR a test taken today.
+export function practicedToday() {
+  const today = dayKey(Date.now())
+  if (dailyActivity().has(today)) return true
+  const r = read().rating
+  return (r?.history || []).some((h) => dayKey(h.ts) === today)
 }
 
 // Consecutive days practiced, counting back from today (today not-yet-played

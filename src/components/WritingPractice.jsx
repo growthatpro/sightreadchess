@@ -5,6 +5,7 @@ import { recordAttempt, recordRound, median, levelSummary } from '../lib/stats'
 import { useBoardWidth } from '../lib/useBoardWidth'
 import { usePeek } from '../lib/usePeek'
 import { gradeWritten, isRight } from '../lib/grade'
+import { playCorrect, playWrong, playFinish } from '../lib/sound'
 import PeekButton from './PeekButton'
 
 // Skill B — writing practice (the reverse of the reading levels). A move is shown on
@@ -98,6 +99,8 @@ export default function WritingPractice({ coordMode = 'on', orientation = 'white
     const ms = performance.now() - startMsRef.current
     const ok = isRight(g.verdict)
     recordAttempt('WRITE', d.sub, ok, ok ? ms : null)
+    if (ok) playCorrect()
+    else playWrong()
     const a = acc.current
     a.attempts += 1
     if (ok) {
@@ -131,6 +134,7 @@ export default function WritingPractice({ coordMode = 'on', orientation = 'white
       bestStreak: a.bestStreak,
     }
     recordRound('WRITE', s)
+    playFinish()
     setSummary(s)
   }
 

@@ -24,6 +24,7 @@ export default function Board({
   theme,
   pieceSet,
   arrows,
+  hidePieces = false, // blindfold mode — pieces invisible, squares still clickable
 }) {
   const live = useRef({})
   live.current = { fen, interactionEnabled, onAttempt }
@@ -39,12 +40,17 @@ export default function Board({
           src={src}
           alt=""
           draggable={false}
-          style={{ width: squareWidth, height: squareWidth, pointerEvents: 'none' }}
+          style={{
+            width: squareWidth,
+            height: squareWidth,
+            pointerEvents: 'none',
+            opacity: hidePieces ? 0 : 1,
+          }}
         />
       )
     }
     return cp
-  }, [setKey])
+  }, [setKey, hidePieces])
 
   const selectedRef = useRef(null)
   const prevFen = useRef(fen)

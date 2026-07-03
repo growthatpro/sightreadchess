@@ -1,15 +1,20 @@
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import LevelSelect from './components/LevelSelect'
 import Round from './components/Round'
 import CoordinateWarmup from './components/CoordinateWarmup'
 import FilesRanks from './components/FilesRanks'
-import Replay from './components/Replay'
-import NotationGuide from './components/NotationGuide'
-import Dashboard from './components/Dashboard'
-import LichessImport from './components/LichessImport'
-import WritingPractice from './components/WritingPractice'
-import AnnotatedReading from './components/AnnotatedReading'
-import SequenceWriting from './components/SequenceWriting'
+import Onboarding from './components/Onboarding'
+
+// Heavy modes (chess.js, bundled game data, the bigger screens) load on demand — this
+// keeps the first paint light on a phone. The core reading loop above stays eager.
+const Replay = lazy(() => import('./components/Replay'))
+const NotationGuide = lazy(() => import('./components/NotationGuide'))
+const Dashboard = lazy(() => import('./components/Dashboard'))
+const LichessImport = lazy(() => import('./components/LichessImport'))
+const WritingPractice = lazy(() => import('./components/WritingPractice'))
+const AnnotatedReading = lazy(() => import('./components/AnnotatedReading'))
+const SequenceWriting = lazy(() => import('./components/SequenceWriting'))
+const TestMode = lazy(() => import('./components/TestMode'))
 import {
   getCoordMode,
   setCoordMode,
@@ -21,18 +26,34 @@ import {
   setBoardTheme,
   getPieceSet,
   setPieceSet,
+  getSound,
+  setSound,
+  getBlindfold,
+  setBlindfold,
+  getOnboarded,
+  setOnboarded,
+  getRating,
+  overallStats,
   resetAll,
 } from './lib/stats'
 import { LEVEL_BY_ID } from './lib/levels'
 
 export default function App() {
-  const [view, setView] = useState({ name: 'menu' }) // {name:'menu'} | {name:'play', levelId}
+  // First run → onboarding; afterwards → straight to the levels. Anyone with existing
+  // progress (played a round or taken a test) counts as onboarded, so the intro never
+  // reappears for returning users after this update.
+  const [view, setView] = useState(() => {
+    const seen = getOnboarded() || overallStats().rounds > 0 || getRating().current != null
+    return seen ? { name: 'menu' } : { name: 'onboarding' }
+  })
   const [coordMode, setCoordModeState] = useState(getCoordMode())
   const [orientation, setOrientationState] = useState(getOrientation())
   const [notation, setNotationState] = useState(getNotation())
   const [boardTheme, setBoardThemeState] = useState(getBoardTheme())
   const [pieceSet, setPieceSetState] = useState(getPieceSet())
-  const [nonce, setNonce] = useState(0) // forces a fresh Round mount on "Again"
+  const [sound, setSoundState] = useState(getSound())
+  const [blindfold, setBlindfoldState] = useState(getBlindfold())
+  const [nonce, setNonce] = useState(0) // forces a fresh mount on "Again"
 
   function chooseCoordMode(v) {
     setCoordMode(v)
@@ -54,6 +75,14 @@ export default function App() {
     setPieceSet(v)
     setPieceSetState(v)
   }
+  function chooseSound(v) {
+    setSound(v)
+    setSoundState(v)
+  }
+  function chooseBlindfold(v) {
+    setBlindfold(v)
+    setBlindfoldState(v)
+  }
 
   function pick(levelId) {
     setNonce((n) => n + 1)
@@ -72,13 +101,27 @@ export default function App() {
       setNotationState(getNotation())
       setBoardThemeState(getBoardTheme())
       setPieceSetState(getPieceSet())
+      setSoundState(getSound())
+      setBlindfoldState(getBlindfold())
       setView({ name: 'menu' })
       setNonce((n) => n + 1)
     }
   }
 
+  function finishOnboarding(dest) {
+    setOnboarded(true)
+    setView({ name: dest })
+  }
+
   let body
-  if (view.name === 'menu') {
+  if (view.name === 'onboarding') {
+    body = (
+      <Onboarding
+        onStartTest={() => finishOnboarding('test')}
+        onStartLevels={() => finishOnboarding('menu')}
+      />
+    )
+  } else if (view.name === 'menu') {
     body = (
       <LevelSelect
         coordMode={coordMode}
@@ -91,6 +134,10 @@ export default function App() {
         onChooseBoardTheme={chooseBoardTheme}
         pieceSet={pieceSet}
         onChoosePieceSet={choosePieceSet}
+        sound={sound}
+        onChooseSound={chooseSound}
+        blindfold={blindfold}
+        onChooseBlindfold={chooseBlindfold}
         onPick={pick}
         onOpenGuide={() => setView({ name: 'guide' })}
         onOpenDashboard={() => setView({ name: 'dashboard' })}
@@ -98,13 +145,24 @@ export default function App() {
         onOpenWriting={() => setView({ name: 'writing' })}
         onOpenAnnotated={() => setView({ name: 'annotated' })}
         onOpenSequence={() => setView({ name: 'sequence' })}
+        onOpenTest={() => setView({ name: 'test' })}
         onReset={reset}
       />
     )
   } else if (view.name === 'guide') {
     body = <NotationGuide onExit={exit} />
   } else if (view.name === 'dashboard') {
-    body = <Dashboard onExit={exit} />
+    body = <Dashboard onExit={exit} onOpenTest={() => setView({ name: 'test' })} />
+  } else if (view.name === 'test') {
+    body = (
+      <TestMode
+        key={nonce}
+        coordMode={coordMode}
+        orientation={orientation}
+        notation={notation}
+        onExit={exit}
+      />
+    )
   } else if (view.name === 'lichess') {
     body = (
       <LichessImport
@@ -122,6 +180,7 @@ export default function App() {
         coordMode={coordMode}
         orientation={orientation}
         notation={notation}
+        blindfold={blindfold}
         onExit={exit}
       />
     )
@@ -145,6 +204,7 @@ export default function App() {
         coordMode={coordMode}
         orientation={orientation}
         notation={notation}
+        blindfold={blindfold}
         onExit={exit}
       />
     )
@@ -161,5 +221,9 @@ export default function App() {
     )
   }
 
-  return <div className="app">{body}</div>
+  return (
+    <div className="app">
+      <Suspense fallback={<div className="loading">Loading…</div>}>{body}</Suspense>
+    </div>
+  )
 }

@@ -16,7 +16,17 @@ for (const [lvl, items] of Object.entries(drills)) {
 }
 
 export function levelCount(levelId) {
+  if (levelId === 'MIX') return MOVE_LEVEL_IDS.reduce((n, id) => n + (drills[id] || []).length, 0)
   return (drills[levelId] || []).length
+}
+
+// Draw a drill from a random move level — the shared engine behind the Mixed level
+// and Writing practice (both span every notation type).
+function nextAnyMoveDrill(avoidFen) {
+  const ids = MOVE_LEVEL_IDS.filter((id) => (drills[id] || []).length > 0)
+  if (!ids.length) return null
+  const levelId = ids[Math.floor(Math.random() * ids.length)]
+  return nextDrill(levelId, avoidFen)
 }
 
 export function subsPresent(levelId) {
@@ -34,6 +44,7 @@ function weightedPick(subs, weights) {
 }
 
 export function nextDrill(levelId, avoidFen) {
+  if (levelId === 'MIX') return nextAnyMoveDrill(avoidFen)
   const subs = subsPresent(levelId)
   if (!subs.length) return null
   const sub = weightedPick(subs, subWeights(levelId, subs))
