@@ -1,0 +1,24 @@
+[Event "London — the Immortal Game"]
+[Site "London"]
+[Date "1851.06.21"]
+[White "Adolf Anderssen"]
+[Black "Lionel Kieseritzky"]
+[Result "1-0"]
+[Blurb "Played casually between rounds of the first international tournament, this is the game that named a genre. Anderssen gives up a bishop, both rooks and the queen — and mates with the three minor pieces he has left."]
+
+1. e4 e5
+2. f4 {The King's Gambit: White offers a pawn to blast open the centre before Black is ready.} exf4
+3. Bc4 Qh4+ 4. Kf1 {White forfeits castling but wins time chasing the loose queen.} b5
+5. Bxb5 Nf6 6. Nf3 {Developing with tempo — the knight hits the queen.} Qh6
+7. d3 Nh5 {Guarding f4, but the knight drifts to the edge and does nothing there.}
+8. Nh4 Qg5 9. Nf5 {A fearless leap into Black's position.} c6
+10. g4 {Trapping the h5-knight in the middle of the fight.} Nf6
+11. Rg1 {A quiet rook move — and a calm sacrifice of the b5-bishop.} cxb5
+12. h4 Qg6 13. h5 Qg5 14. Qf3 {Threatening Bxf4, which would trap the queen.} Ng8 {Black is pushed all the way back to the starting rank.}
+15. Bxf4 Qf6 16. Nc3 Bc5 {Both sides ignore ordinary development to fight over the initiative.}
+17. Nd5 {With tempo — attacking the queen again.} Qxb2 {Black grabs a rook's worth of pawns, and walks into immortality.}
+18. Bd6 {The stunning point: Anderssen offers a whole rook to jam Black's pieces in each other's way.} Bxg1
+19. e5 {Slamming the door on the queen so it can never come back to defend.} Qxa1+
+20. Ke2 Na6 {Trying, too late, to cover the dark squares around the king.}
+21. Nxg7+ Kd8 22. Qf6+ {A second queen offer — dragging the last defender off f6.} Nxf6
+23. Be7# {Checkmate. Two knights and a bishop finish the job, having sacrificed a bishop, two rooks and the queen to get there.}

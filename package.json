@@ -6,6 +6,7 @@
   "description": "A typing-tutor for reading chess notation, fast.",
   "scripts": {
     "drills": "node scripts/build-drills.mjs",
+    "annotated": "node scripts/build-annotated.mjs",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"

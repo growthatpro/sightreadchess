@@ -29,6 +29,8 @@ export default function LevelSelect({
   onOpenDashboard,
   onOpenLichess,
   onOpenWriting,
+  onOpenAnnotated,
+  onOpenSequence,
   onReset,
 }) {
   return (
@@ -176,6 +178,14 @@ export default function LevelSelect({
 
       <button className="li-cta write-cta" onClick={onOpenWriting}>
         ✍️ Writing practice — see the move, write the notation →
+      </button>
+
+      <button className="li-cta seq-cta" onClick={onOpenSequence}>
+        🧠 Sequence memory — study a line, then write it all from memory →
+      </button>
+
+      <button className="li-cta read-cta" onClick={onOpenAnnotated}>
+        📖 Read an annotated game — a real game with commentary, move by move →
       </button>
 
       <button className="li-cta" onClick={onOpenLichess}>

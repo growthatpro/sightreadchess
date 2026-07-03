@@ -31,8 +31,10 @@ export default function Replay({
   onExit,
   gameList = games,
   fixedGame = null,
+  annotations = null, // per-ply commentary (annotated reading mode); null = plain replay
   titlePill = 'L8',
   titleName = 'Whole game',
+  statKey = 'L8', // which stats bucket this records into
 }) {
   const boardWidth = useBoardWidth()
   const { showCoords, isPeek, peeking, peekHandlers } = usePeek(coordMode)
@@ -120,7 +122,7 @@ export default function Replay({
     const cur = curRef.current
     const isCorrect = from === cur.from && to === cur.to
     const ms = performance.now() - acc.current.promptStartMs
-    recordAttempt('L8', 'game', isCorrect, isCorrect ? ms : null)
+    recordAttempt(statKey, 'game', isCorrect, isCorrect ? ms : null)
 
     const a = acc.current
     a.attempts += 1
@@ -176,14 +178,16 @@ export default function Replay({
     setInteraction(false)
     const a = acc.current
     const s = {
-      levelId: 'L8',
+      levelId: statKey,
+      pill: titlePill,
+      title: titleName,
       medianMs: median(a.latencies),
       accuracy: a.attempts ? a.correct / a.attempts : 0,
       correct: a.correct,
       attempts: a.attempts,
       bestStreak: a.bestStreak,
     }
-    recordRound('L8', s)
+    recordRound(statKey, s)
     setSummary(s)
   }
 
@@ -193,6 +197,10 @@ export default function Replay({
 
   const color = prompt ? prompt.color : null
   const pct = total ? Math.max(0, Math.min(100, (ply / total) * 100)) : 0
+  const note = annotations ? annotations[ply] : null
+  const moveLabel = prompt
+    ? `${Math.floor(ply / 2) + 1}${color === 'w' ? '.' : '…'} ${displaySan(prompt.san, notation)}`
+    : ''
 
   return (
     <div className="round">
@@ -258,9 +266,26 @@ export default function Replay({
         />
       </div>
 
+      {annotations && (
+        <div className="annotation">
+          <div className="annotation-move">{moveLabel}</div>
+          {note ? (
+            <p className="annotation-text">{note}</p>
+          ) : (
+            <p className="annotation-text muted">
+              Play <b>{prompt ? displaySan(prompt.san, notation) : ''}</b> on the board to read on…
+            </p>
+          )}
+        </div>
+      )}
+
       <div className="under-board">
         <PeekButton isPeek={isPeek} peeking={peeking} peekHandlers={peekHandlers} />
-        <p className="hint">Play the game move by move. Finish any time — what you did still counts.</p>
+        <p className="hint">
+          {annotations
+            ? 'Read the move, play it on the board, and the commentary follows the game.'
+            : 'Play the game move by move. Finish any time — what you did still counts.'}
+        </p>
       </div>
     </div>
   )

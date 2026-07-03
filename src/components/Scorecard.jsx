@@ -7,7 +7,10 @@ const pct = (x) => Math.round(x * 100) + '%'
 // End-of-round scorecard. Headline = median decode latency + accuracy. Below it,
 // how this round sits against your history for the level, and a latency trend line.
 export default function Scorecard({ summary, onAgain, onExit }) {
-  const level = LEVEL_BY_ID[summary.levelId]
+  const level = LEVEL_BY_ID[summary.levelId] || {
+    id: summary.pill || '•',
+    name: summary.title || 'Session',
+  }
   const ls = levelSummary(summary.levelId) // already includes this round
   const rounds = ls.rounds
   const played = ls.played

@@ -4,6 +4,7 @@ import { nextWritingDrill } from '../lib/sampler'
 import { recordAttempt, recordRound, median, levelSummary } from '../lib/stats'
 import { useBoardWidth } from '../lib/useBoardWidth'
 import { usePeek } from '../lib/usePeek'
+import { gradeWritten, isRight } from '../lib/grade'
 import PeekButton from './PeekButton'
 
 // Skill B — writing practice (the reverse of the reading levels). A move is shown on
@@ -19,32 +20,6 @@ function resolveOrientation(setting) {
   return 'white'
 }
 
-// Strip the check/mate marker + any !? annotations, normalise 0-0 -> O-O.
-function core(s) {
-  return s.trim().replace(/[+#]$/, '').replace(/0/g, 'O').replace(/[!?]+$/, '')
-}
-
-// Grade a written move against the canonical SAN. Case-insensitive on the move itself
-// (mobile keyboards fight uppercase piece letters); the only "almost" is a right move
-// with the check/mate marker left off — which we still credit but teach.
-export function gradeWritten(input, canonical) {
-  const raw = input.trim()
-  if (!raw) return { verdict: 'empty' }
-  if (core(raw).toLowerCase() === core(canonical).toLowerCase()) {
-    const canonMark = (canonical.match(/[+#]$/) || [''])[0]
-    const inMark = (raw.match(/[+#]$/) || [''])[0]
-    if (canonMark && inMark !== canonMark) {
-      return {
-        verdict: 'almost',
-        note: canonMark === '#' ? 'that’s checkmate' : 'that gives check',
-        correct: canonical,
-      }
-    }
-    return { verdict: 'correct', correct: canonical }
-  }
-  return { verdict: 'wrong', correct: canonical }
-}
-
 export default function WritingPractice({ coordMode = 'on', orientation = 'white', onExit }) {
   const boardWidth = useBoardWidth()
   const { showCoords, isPeek, peeking, peekHandlers } = usePeek(coordMode)
@@ -53,6 +28,8 @@ export default function WritingPractice({ coordMode = 'on', orientation = 'white
   const drillRef = useRef(null)
   const startMsRef = useRef(0)
   const inputRef = useRef(null)
+  const phaseRef = useRef('writing') // mirror of `phase` for the keydown listener
+  const nextRef = useRef(() => {}) // latest next() for the keydown listener
 
   const [drill, setDrill] = useState(null)
   const [value, setValue] = useState('')
@@ -66,6 +43,25 @@ export default function WritingPractice({ coordMode = 'on', orientation = 'white
     start()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Enter always moves you forward — from the feedback view, hitting Enter goes to the
+  // next move (right or wrong), so your hands never have to leave the keyboard. A
+  // window-level listener so it fires no matter where focus landed after the input
+  // unmounted; guarded on phase so the same keypress that graded can't also advance.
+  useEffect(() => {
+    function onKey(e) {
+      if (e.key !== 'Enter') return
+      if (phaseRef.current !== 'feedback') return
+      e.preventDefault()
+      nextRef.current()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
+  // Keep the listener's refs pointed at the current render.
+  phaseRef.current = phase
+  nextRef.current = next
 
   function start() {
     acc.current = { attempts: 0, correct: 0, latencies: [], streak: 0, bestStreak: 0 }
@@ -100,7 +96,7 @@ export default function WritingPractice({ coordMode = 'on', orientation = 'white
     const g = gradeWritten(value, d.san)
     if (g.verdict === 'empty') return
     const ms = performance.now() - startMsRef.current
-    const ok = g.verdict === 'correct' || g.verdict === 'almost'
+    const ok = isRight(g.verdict)
     recordAttempt('WRITE', d.sub, ok, ok ? ms : null)
     const a = acc.current
     a.attempts += 1
@@ -233,9 +229,8 @@ export default function WritingPractice({ coordMode = 'on', orientation = 'white
                 </span>
               )}
             </div>
-            {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
-            <button className="btn primary" type="submit" autoFocus>
-              Next →
+            <button className="btn primary" type="button" onClick={next}>
+              Next → <span className="key-hint">↵ Enter</span>
             </button>
           </>
         )}
