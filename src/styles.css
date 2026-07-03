@@ -1011,6 +1011,64 @@ body {
   font-size: 12.5px;
 }
 
+/* ---------- writing practice ---------- */
+.write-cta {
+  color: var(--green);
+}
+.write-form {
+  display: flex;
+  gap: 10px;
+  max-width: 460px;
+  margin: 14px auto 0;
+  align-items: stretch;
+}
+.write-form .btn {
+  flex: 0 0 auto;
+  width: auto;
+  padding: 13px 20px;
+}
+.write-input {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: var(--text);
+  font-size: 18px;
+  font-family: var(--mono);
+  outline: none;
+}
+.write-input:focus {
+  border-color: var(--accent);
+}
+.write-feedback {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 14.5px;
+  line-height: 1.4;
+  border: 1px solid var(--line);
+  background: var(--card);
+}
+.write-feedback b {
+  font-family: var(--mono);
+}
+.write-feedback.correct {
+  color: var(--green);
+  border-color: rgba(34, 197, 94, 0.4);
+}
+.write-feedback.almost {
+  color: var(--amber);
+  border-color: rgba(245, 158, 11, 0.4);
+}
+.write-feedback.wrong {
+  color: var(--red);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
 @media (max-width: 400px) {
   .san {
     font-size: 44px;

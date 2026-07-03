@@ -7,6 +7,7 @@ import Replay from './components/Replay'
 import NotationGuide from './components/NotationGuide'
 import Dashboard from './components/Dashboard'
 import LichessImport from './components/LichessImport'
+import WritingPractice from './components/WritingPractice'
 import {
   getCoordMode,
   setCoordMode,
@@ -82,6 +83,7 @@ export default function App() {
         onOpenGuide={() => setView({ name: 'guide' })}
         onOpenDashboard={() => setView({ name: 'dashboard' })}
         onOpenLichess={() => setView({ name: 'lichess' })}
+        onOpenWriting={() => setView({ name: 'writing' })}
         onReset={reset}
       />
     )
@@ -98,6 +100,8 @@ export default function App() {
         onExit={exit}
       />
     )
+  } else if (view.name === 'writing') {
+    body = <WritingPractice coordMode={coordMode} orientation={orientation} onExit={exit} />
   } else if (LEVEL_BY_ID[view.levelId].kind === 'filerank') {
     body = <FilesRanks key={nonce} coordMode={coordMode} orientation={orientation} onExit={exit} />
   } else if (LEVEL_BY_ID[view.levelId].kind === 'coords') {

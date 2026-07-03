@@ -4,6 +4,7 @@
 
 import drills from '../data/drills.json'
 import { subWeights } from './stats'
+import { MOVE_LEVEL_IDS } from './levels'
 
 // Pre-index every level's drills by sub-type once, at module load.
 const bySub = {}
@@ -46,4 +47,14 @@ export function nextDrill(levelId, avoidFen) {
     }
   }
   return d
+}
+
+// A drill for writing practice — mixed across every move level so it spans all the
+// notation types (pawn, piece, capture, castle, promotion, disambiguation).
+export function nextWritingDrill(avoidFen) {
+  const ids = MOVE_LEVEL_IDS.filter((id) => levelCount(id) > 0)
+  if (!ids.length) return null
+  const levelId = ids[Math.floor(Math.random() * ids.length)]
+  const d = nextDrill(levelId, avoidFen)
+  return d ? { ...d, levelId } : null
 }

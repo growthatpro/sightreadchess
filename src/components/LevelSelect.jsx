@@ -26,6 +26,7 @@ export default function LevelSelect({
   onOpenGuide,
   onOpenDashboard,
   onOpenLichess,
+  onOpenWriting,
   onReset,
 }) {
   return (
@@ -135,6 +136,10 @@ export default function LevelSelect({
           )
         })}
       </div>
+
+      <button className="li-cta write-cta" onClick={onOpenWriting}>
+        ✍️ Writing practice — see the move, write the notation →
+      </button>
 
       <button className="li-cta" onClick={onOpenLichess}>
         ⚡ Play your own Lichess games →
