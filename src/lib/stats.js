@@ -11,7 +11,10 @@ function blankLevel() {
 }
 
 function defaults() {
-  return { settings: { coords: 'on', orientation: 'white', notation: 'san' }, levels: {} }
+  return {
+    settings: { coords: 'on', orientation: 'white', notation: 'san', boardTheme: 'green' },
+    levels: {},
+  }
 }
 
 let cache = null
@@ -78,6 +81,13 @@ export function getNotation() {
 }
 export function setNotation(v) {
   read().settings.notation = v
+  write()
+}
+export function getBoardTheme() {
+  return read().settings.boardTheme || 'green'
+}
+export function setBoardTheme(v) {
+  read().settings.boardTheme = v
   write()
 }
 

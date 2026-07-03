@@ -1,6 +1,7 @@
 import { LEVELS } from '../lib/levels'
 import { levelSummary, weakestSub } from '../lib/stats'
 import { levelCount } from '../lib/sampler'
+import { BOARD_THEMES } from '../lib/board'
 import InstallHint from './InstallHint'
 
 const fmtSecs = (ms) => (ms == null ? '—' : (ms / 1000).toFixed(2) + 's')
@@ -19,6 +20,8 @@ export default function LevelSelect({
   onChooseOrientation,
   notation,
   onChooseNotation,
+  boardTheme,
+  onChooseBoardTheme,
   onPick,
   onOpenGuide,
   onOpenDashboard,
@@ -79,6 +82,16 @@ export default function LevelSelect({
               ['san', 'Letters'],
               ['figurine', '♞ Figurine'],
             ]}
+          />
+        </div>
+
+        <div className="seg-group">
+          <span className="seg-label">Board</span>
+          <Segmented
+            value={boardTheme}
+            onChange={onChooseBoardTheme}
+            options={Object.entries(BOARD_THEMES).map(([k, v]) => [k, v.label])}
+            swatches={BOARD_THEMES}
           />
         </div>
 
@@ -155,7 +168,7 @@ export default function LevelSelect({
   )
 }
 
-function Segmented({ value, onChange, options }) {
+function Segmented({ value, onChange, options, swatches }) {
   return (
     <div className="seg">
       {options.map(([val, label]) => (
@@ -164,6 +177,14 @@ function Segmented({ value, onChange, options }) {
           className={'seg-btn' + (value === val ? ' on' : '')}
           onClick={() => onChange(val)}
         >
+          {swatches && swatches[val] && (
+            <span
+              className="seg-swatch"
+              style={{
+                background: `linear-gradient(135deg, ${swatches[val].light} 0 50%, ${swatches[val].dark} 50% 100%)`,
+              }}
+            />
+          )}
           {label}
         </button>
       ))}

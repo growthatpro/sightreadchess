@@ -14,6 +14,8 @@ import {
   setOrientation,
   getNotation,
   setNotation,
+  getBoardTheme,
+  setBoardTheme,
   resetAll,
 } from './lib/stats'
 import { LEVEL_BY_ID } from './lib/levels'
@@ -23,6 +25,7 @@ export default function App() {
   const [coordMode, setCoordModeState] = useState(getCoordMode())
   const [orientation, setOrientationState] = useState(getOrientation())
   const [notation, setNotationState] = useState(getNotation())
+  const [boardTheme, setBoardThemeState] = useState(getBoardTheme())
   const [nonce, setNonce] = useState(0) // forces a fresh Round mount on "Again"
 
   function chooseCoordMode(v) {
@@ -36,6 +39,10 @@ export default function App() {
   function chooseNotation(v) {
     setNotation(v)
     setNotationState(v)
+  }
+  function chooseBoardTheme(v) {
+    setBoardTheme(v)
+    setBoardThemeState(v)
   }
 
   function pick(levelId) {
@@ -53,6 +60,7 @@ export default function App() {
       setCoordModeState(getCoordMode())
       setOrientationState(getOrientation())
       setNotationState(getNotation())
+      setBoardThemeState(getBoardTheme())
       setView({ name: 'menu' })
       setNonce((n) => n + 1)
     }
@@ -68,6 +76,8 @@ export default function App() {
         onChooseOrientation={chooseOrientation}
         notation={notation}
         onChooseNotation={chooseNotation}
+        boardTheme={boardTheme}
+        onChooseBoardTheme={chooseBoardTheme}
         onPick={pick}
         onOpenGuide={() => setView({ name: 'guide' })}
         onOpenDashboard={() => setView({ name: 'dashboard' })}

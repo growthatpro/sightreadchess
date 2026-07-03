@@ -1,6 +1,7 @@
 import { useCallback, useReducer, useRef } from 'react'
 import { Chessboard } from 'react-chessboard'
-import { occupiedSquares } from '../lib/board'
+import { occupiedSquares, BOARD_THEMES } from '../lib/board'
+import { getBoardTheme } from '../lib/stats'
 
 // The board. Two ways to move: drag a piece, or click source then destination.
 // Deliberately NO legal-move highlighting and NO legal-only constraint — that would
@@ -20,9 +21,12 @@ export default function Board({
   interactionEnabled,
   onAttempt,
   highlightSquares,
+  theme,
+  arrows,
 }) {
   const live = useRef({})
   live.current = { fen, interactionEnabled, onAttempt }
+  const t = BOARD_THEMES[theme || getBoardTheme()] || BOARD_THEMES.green
 
   const selectedRef = useRef(null)
   const prevFen = useRef(fen)
@@ -87,8 +91,9 @@ export default function Board({
       onSquareClick={handleSquareClick}
       customSquareStyles={squareStyles}
       customBoardStyle={{ borderRadius: '8px', boxShadow: '0 10px 34px rgba(2, 12, 27, 0.45)' }}
-      customDarkSquareStyle={{ backgroundColor: '#6f97ad' }}
-      customLightSquareStyle={{ backgroundColor: '#e6edf2' }}
+      customDarkSquareStyle={{ backgroundColor: t.dark }}
+      customLightSquareStyle={{ backgroundColor: t.light }}
+      customArrows={arrows}
       animationDuration={140}
     />
   )

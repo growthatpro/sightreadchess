@@ -252,6 +252,8 @@ body {
   gap: 2px;
 }
 .seg-btn {
+  display: inline-flex;
+  align-items: center;
   border: none;
   background: none;
   color: var(--muted);
@@ -264,6 +266,13 @@ body {
 .seg-btn.on {
   background: var(--accent);
   color: var(--bg);
+}
+.seg-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  margin-right: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .grid {

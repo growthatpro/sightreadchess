@@ -22,3 +22,13 @@ export function occupiedSquares(fen) {
 }
 
 export const EMPTY_FEN = '8/8/8/8/8/8/8/8 w - - 0 1'
+
+// Board colour themes. 'green' matches Chess.com's signature board; the rest are the
+// other common looks. Light/dark are the two square colours.
+export const BOARD_THEMES = {
+  green: { light: '#ebecd0', dark: '#739552', label: 'Green' },
+  brown: { light: '#f0d9b5', dark: '#b58863', label: 'Wood' },
+  blue: { light: '#dee3e6', dark: '#8ca2ad', label: 'Blue' },
+  slate: { light: '#e6edf2', dark: '#6f97ad', label: 'Slate' },
+}
+export const DEFAULT_BOARD_THEME = 'green'
