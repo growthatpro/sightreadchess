@@ -11,6 +11,7 @@ const Replay = lazy(() => import('./components/Replay'))
 const NotationGuide = lazy(() => import('./components/NotationGuide'))
 const Dashboard = lazy(() => import('./components/Dashboard'))
 const LichessImport = lazy(() => import('./components/LichessImport'))
+const ChessComImport = lazy(() => import('./components/ChessComImport'))
 const WritingPractice = lazy(() => import('./components/WritingPractice'))
 const AnnotatedReading = lazy(() => import('./components/AnnotatedReading'))
 const SequenceWriting = lazy(() => import('./components/SequenceWriting'))
@@ -142,6 +143,7 @@ export default function App() {
         onOpenGuide={() => setView({ name: 'guide' })}
         onOpenDashboard={() => setView({ name: 'dashboard' })}
         onOpenLichess={() => setView({ name: 'lichess' })}
+        onOpenChessCom={() => setView({ name: 'chesscom' })}
         onOpenWriting={() => setView({ name: 'writing' })}
         onOpenAnnotated={() => setView({ name: 'annotated' })}
         onOpenSequence={() => setView({ name: 'sequence' })}
@@ -166,6 +168,15 @@ export default function App() {
   } else if (view.name === 'lichess') {
     body = (
       <LichessImport
+        coordMode={coordMode}
+        orientation={orientation}
+        notation={notation}
+        onExit={exit}
+      />
+    )
+  } else if (view.name === 'chesscom') {
+    body = (
+      <ChessComImport
         coordMode={coordMode}
         orientation={orientation}
         notation={notation}

@@ -33,6 +33,7 @@ export default function LevelSelect({
   onOpenGuide,
   onOpenDashboard,
   onOpenLichess,
+  onOpenChessCom,
   onOpenWriting,
   onOpenAnnotated,
   onOpenSequence,
@@ -245,6 +246,10 @@ export default function LevelSelect({
 
       <button className="li-cta" onClick={onOpenLichess}>
         ⚡ Play your own Lichess games →
+      </button>
+
+      <button className="li-cta" onClick={onOpenChessCom}>
+        ♟ Play your own Chess.com games →
       </button>
 
       <footer className="menu-foot">
