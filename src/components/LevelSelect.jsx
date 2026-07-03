@@ -262,6 +262,10 @@ export default function LevelSelect({
               on. Difficulty itself stays constant, so day-to-day runs compare fairly.
             </li>
             <li>Positions are real — sampled from 990 world-championship games.</li>
+            <li>
+              Beyond the levels: <b>writing practice</b>, <b>sequence memory</b>, <b>annotated
+              games</b>, and the adaptive <b>Sightreading test</b> for one tracked rating.
+            </li>
           </ul>
         </details>
         <button className="link-btn guide-foot-link" onClick={onOpenGuide}>

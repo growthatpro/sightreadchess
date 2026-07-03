@@ -102,6 +102,34 @@ export default function NotationGuide({ onExit }) {
         </ul>
       </Section>
 
+      <Section title="Display styles (a setting)">
+        <p>
+          The same move can be shown three ways — pick one on the Levels screen; it’s purely
+          how it looks, the answer is identical:
+        </p>
+        <ul className="guide-list">
+          <li>
+            <b>Letters</b> — standard SAN: <Code>Nf3</Code>. The one to learn.
+          </li>
+          <li>
+            <b>Figurine</b> — the piece letter becomes its symbol: <Code>♞f3</Code>. How printed
+            books often show it.
+          </li>
+          <li>
+            <b>Long</b> — spells out the start square too: <Code>Ng1-f3</Code>, <Code>e2-e4</Code>.
+            Easier while you’re learning; drop it once letters feel fast.
+          </li>
+        </ul>
+      </Section>
+
+      <Section title="Test your speed">
+        <p>
+          When reading feels quick, take the <b>Sightreading test</b> from the home screen — a short
+          adaptive run that gives you one <b>rating</b> for how fast you read, tracked over time.
+          Turn <b>Blindfold</b> on (also a setting) to play whole games from the notation alone.
+        </p>
+      </Section>
+
       <p className="guide-foot">
         Want the exhaustive reference?{' '}
         <a href="https://en.wikipedia.org/wiki/Algebraic_notation_(chess)" target="_blank" rel="noreferrer">
