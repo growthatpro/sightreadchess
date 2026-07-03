@@ -2,6 +2,8 @@
 // Tracks: round history (median decode latency + accuracy), best streaks, and
 // per-sub-type attempt/error/latency data that drives the light within-level weighting.
 
+import { LEVELS } from './levels'
+
 const KEY = 'sightread.v1'
 
 function blankLevel() {
@@ -165,4 +167,123 @@ export function levelSummary(id) {
 export function resetAll() {
   cache = defaults()
   write()
+}
+
+// ---- cross-level aggregation (feeds the progress dashboard) ----
+
+// Local YYYY-MM-DD key for a timestamp.
+export function dayKey(ts) {
+  const d = new Date(ts)
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${d.getFullYear()}-${m}-${day}`
+}
+
+// Every round across every level, tagged with its level id, oldest first.
+export function allRounds() {
+  const s = read()
+  const out = []
+  for (const [id, l] of Object.entries(s.levels || {})) {
+    for (const r of l.rounds || []) out.push({ ...r, levelId: id })
+  }
+  return out.sort((a, b) => a.ts - b.ts)
+}
+
+// Map of dayKey -> { rounds, moves } (moves = correct moves that day).
+export function dailyActivity() {
+  const map = new Map()
+  for (const r of allRounds()) {
+    const k = dayKey(r.ts)
+    const cur = map.get(k) || { rounds: 0, moves: 0 }
+    cur.rounds += 1
+    cur.moves += r.correct || 0
+    map.set(k, cur)
+  }
+  return map
+}
+
+// Consecutive days practiced, counting back from today (today not-yet-played
+// doesn't break a streak that's still alive — we start from yesterday then).
+export function dailyStreak() {
+  const map = dailyActivity()
+  if (map.size === 0) return 0
+  const d = new Date()
+  if (!map.has(dayKey(d.getTime()))) d.setDate(d.getDate() - 1)
+  let streak = 0
+  while (map.has(dayKey(d.getTime()))) {
+    streak += 1
+    d.setDate(d.getDate() - 1)
+  }
+  return streak
+}
+
+// Headline totals across the whole app.
+export function overallStats() {
+  const rounds = allRounds()
+  const moves = rounds.reduce((a, r) => a + (r.correct || 0), 0)
+  const attempts = rounds.reduce((a, r) => a + (r.attempts || 0), 0)
+  return {
+    rounds: rounds.length,
+    moves,
+    attempts,
+    accuracy: attempts ? moves / attempts : 0,
+    days: dailyActivity().size,
+    streak: dailyStreak(),
+    firstTs: rounds.length ? rounds[0].ts : null,
+    lastTs: rounds.length ? rounds[rounds.length - 1].ts : null,
+  }
+}
+
+// Per-sub-type performance across every level, weakest first. This is the
+// "which move-types are still slowest / wrongest" breakdown.
+export function moveTypeStats() {
+  const s = read()
+  const out = []
+  for (const lvl of LEVELS) {
+    if (!lvl.subs || !lvl.subs.length) continue
+    const l = s.levels[lvl.id]
+    if (!l || !l.subs) continue
+    for (const sub of lvl.subs) {
+      const st = l.subs[sub]
+      if (!st || !st.attempts) continue
+      const med = median(st.latencies)
+      const errRate = st.errors / st.attempts
+      const latPenalty = med == null ? 0 : Math.max(0, Math.min(1, (med - 1500) / 3000))
+      const weakness = 0.6 * errRate + 0.4 * latPenalty
+      out.push({
+        levelId: lvl.id,
+        levelName: lvl.name,
+        sub,
+        label: (lvl.subLabels && lvl.subLabels[sub]) || sub,
+        attempts: st.attempts,
+        errors: st.errors,
+        errRate,
+        accuracy: 1 - errRate,
+        medianMs: med,
+        weakness,
+      })
+    }
+  }
+  return out.sort((a, b) => b.weakness - a.weakness)
+}
+
+// Per-day latency + accuracy for one level (a round's median stands in for its
+// day; multiple rounds in a day are averaged). Oldest first.
+export function levelDailySeries(levelId) {
+  const l = level(levelId)
+  const byDay = new Map()
+  for (const r of l.rounds || []) {
+    const k = dayKey(r.ts)
+    const cur = byDay.get(k) || { lat: [], acc: [] }
+    if (r.medianMs != null) cur.lat.push(r.medianMs)
+    if (r.accuracy != null) cur.acc.push(r.accuracy)
+    byDay.set(k, cur)
+  }
+  return [...byDay.entries()]
+    .sort((a, b) => (a[0] < b[0] ? -1 : 1))
+    .map(([date, v]) => ({
+      date,
+      medianMs: v.lat.length ? median(v.lat) : null,
+      accuracy: v.acc.length ? v.acc.reduce((a, b) => a + b, 0) / v.acc.length : null,
+    }))
 }

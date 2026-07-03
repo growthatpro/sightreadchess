@@ -21,6 +21,7 @@ export default function LevelSelect({
   onChooseNotation,
   onPick,
   onOpenGuide,
+  onOpenDashboard,
   onReset,
 }) {
   return (
@@ -31,9 +32,14 @@ export default function LevelSelect({
           Sight<span>read</span> Chess
         </h1>
         <p className="tag">Read chess notation at a glance. See the move, play it, get faster.</p>
-        <button className="guide-link" onClick={onOpenGuide}>
-          📖 New to notation? Read the 1-page guide →
-        </button>
+        <div className="hero-btns">
+          <button className="guide-link" onClick={onOpenGuide}>
+            📖 Notation guide
+          </button>
+          <button className="guide-link" onClick={onOpenDashboard}>
+            📊 Progress
+          </button>
+        </div>
       </header>
 
       <div className="settings-row">
